@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Account Freeze Request Resolution",
+  "description": "Standardized schema for account freeze ticket resolutions, normalizing outputs from five inconsistent developer implementations",
+  "type": "object",
+  "required": [
+    "ticket_id",
+    "action",
+    "affected_accounts",
+    "reason_code",
+    "evidence_summary"
+  ],
+  "properties": {
+    "ticket_id": {
+      "type": "string",
+      "pattern": "^T-[0-9]+$",
+      "description": "Ticket identifier. Normalizes: ticketId, ticket.id, id, ticket_id, ticketRef"
+    },
+    "action": {
+      "type": "string",
+      "enum": ["freeze", "partial_freeze", "deny"],
+      "description": "Account action to take. Normalizes: decision (FREEZE), outcome.action (freeze_all), result (frozen), freeze_type (full), recommendation.type (FREEZE)"
+    },
+    "affected_accounts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^AC-[0-9]+$"
+      },
+      "minItems": 1,
+      "description": "Account IDs affected. Normalizes: accounts (array), affected (comma-separated string), account_list (array of objects)"
+    },
+    "reason_code": {
+      "type": "string",
+      "enum": [
+        "fraud_suspected",
+        "customer_request",
+        "court_order",
+        "insufficient_evidence"
+      ],
+      "description": "Standardized reason category. Normalizes: why (text), reason (text), reason_code (numeric), reasonCode (enum string)"
+    },
+    "evidence_summary": {
+      "type": "string",
+      "maxLength": 300,
+      "description": "Concise evidence summary. Normalizes: why, reason, notes, summary, evidence (array)"
+    },
+    "confidence_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "[INVENTED] Numeric confidence in this action (0–1). Only dev_b had this concept (0.91). Useful for routing high-confidence vs. review-needed cases."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "[INVENTED] ISO 8601 timestamp of decision. None of the 5 samples included audit timestamps—critical for compliance and debugging."
+    },
+    "action_scope": {
+      "type": "string",
+      "enum": ["single_account", "linked_accounts", "all_related"],
+      "description": "[INVENTED] Scope of freeze action. dev_e had 'ALL_LINKED' concept, but scope wasn't consistently modeled. Clarifies intent."
+    },
+    "additional_notes": {
+      "type": "string",
+      "maxLength": 500,
+      "description": "Optional notes. dev_c had detailed 'notes' (dispute count, card status); dev_d had 'summary'. Preserved as optional catch-all."
+    }
+  },
+  "additionalProperties": false
+}
