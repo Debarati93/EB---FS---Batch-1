@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(git init *)",
-      "Bash(git remote *)"
+      "Bash(git remote *)",
+      "Bash(git commit -m 'Initial lab kit: compliance extraction prompts, schemas, and validation *)",
+      "Bash(git config *)",
+      "Bash(git push *)"
     ]
   }
 }
